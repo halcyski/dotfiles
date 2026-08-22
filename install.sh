@@ -4,7 +4,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-PACKAGES=(bash kitty starship nvim bin fonts tmux)
+PACKAGES=(bash kitty starship nvim bin fonts tmux direnv)
 
 if ! command -v stow >/dev/null 2>&1; then
     echo "error: stow is not installed" >&2
