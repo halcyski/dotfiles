@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Run a project-local mise task, leaving the caller responsible for its shell.
+set -euo pipefail
+
+task=${1:?usage: tmux-task TASK}
+
+if ! command -v mise >/dev/null 2>&1; then
+    printf 'mise is not installed; VERIFY task %q was not started.\n' "$task" >&2
+    exit 0
+fi
+
+exec mise run "$task"

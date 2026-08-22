@@ -84,6 +84,20 @@ alias gl='git log'
 alias ..='cd ..'
 alias cl='cd $1; ls'
 
+# Open a file reference such as src/parser.cpp:183 in Neovim
+v() {
+    if [ "$#" -eq 1 ] && [[ $1 =~ ^(.+):([0-9]+)(-[0-9]+)?$ ]]; then
+        nvim "+${BASH_REMATCH[2]}" "${BASH_REMATCH[1]}"
+    else
+        nvim "$@"
+    fi
+}
+
+# Attach or create the tmux CODE/VERIFY workspace for the current repository
+tproj() {
+    tmux-project "$@"
+}
+
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -111,14 +125,20 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/node-v22/bin:$PATH"
 eval "$(direnv hook bash)"
 
+if command -v mise >/dev/null 2>&1; then
+    eval "$(mise activate bash)"
+fi
+if command -v atuin >/dev/null 2>&1; then
+    eval "$(atuin init bash)"
+fi
+
 # Skips when already in tmux, non-interactive, or NO_TMUX is set.
 if command -v tmux >/dev/null 2>&1 \
+    && command -v tmux-project >/dev/null 2>&1 \
     && [ -z "${TMUX:-}" ] \
     && [ -z "${NO_TMUX:-}" ] \
     && [[ $- == *i* ]]; then
-    tmux_session=$(basename "$PWD" | tr -c 'A-Za-z0-9_-' '_' | sed 's/_*$//')
-    [ -n "$tmux_session" ] || tmux_session="main"
-    exec tmux new-session -A -s "$tmux_session"
+    exec tmux-project
 fi
 
 # sync starship palette from the active kitty theme, then start starship
@@ -128,3 +148,6 @@ fi
 if command -v starship >/dev/null 2>&1; then
     eval "$(starship init bash)"
 fi
+
+# Pi
+export PATH="/home/hdski/.local/share/pi-node/node-v22.23.2-linux-x64/bin:$PATH"
