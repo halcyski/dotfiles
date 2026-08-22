@@ -1,0 +1,7 @@
+# Project rules
+
+- inspect before editing; report relevant findings as `file:line`
+- make the smallest correct change and preserve local patterns
+- do not modify generated files, suppress warnings, disable tests, or broaden a narrow fix
+- use `mise run build`, focused tests, and `mise run check` before handoff where available
+- ask before dependencies, toolchain/Meson global configuration, public APIs, migrations, network access, broad formatting, or changes outside this component
