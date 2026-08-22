@@ -1,0 +1,39 @@
+# Copy to a repository or submodule as mise.toml, then set versions and test
+# selectors for that component. Keep tool versions project-specific.
+
+[tasks.setup]
+run = "meson setup build"
+description = "configure the local Meson build directory"
+
+[tasks.build]
+run = "meson compile -C build"
+description = "incremental Meson build"
+
+[tasks.test]
+run = "meson test -C build --print-errorlogs"
+description = "Meson test suite"
+
+[tasks.test-focused]
+run = """
+if [ -n \"${MESON_TEST:-}\" ]; then
+    meson test -C build --print-errorlogs \"$MESON_TEST\"
+elif [ -n \"${PYTEST_ARGS:-}\" ]; then
+    pytest $PYTEST_ARGS
+else
+    echo 'set MESON_TEST or PYTEST_ARGS for a focused test' >&2
+    exit 2
+fi
+"""
+description = "selected Meson or pytest test"
+
+[tasks.check]
+run = "mise run build && mise run test && pytest"
+description = "deliberate full validation; adjust for components without pytest"
+
+[tasks.watch-build]
+run = "watchexec -e c,cc,cpp,cxx,h,hpp,py --restart -- meson compile -C build"
+description = "rebuild affected C++/Python changes"
+
+[tasks.watch-test]
+run = "watchexec -e c,cc,cpp,cxx,h,hpp,py --restart -- bash -lc 'mise run build && mise run test-focused'"
+description = "rebuild and run the selected test"

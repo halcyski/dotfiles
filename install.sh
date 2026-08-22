@@ -4,7 +4,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-PACKAGES=(bash kitty starship nvim bin fonts tmux direnv)
+PACKAGES=(bash kitty starship nvim bin fonts tmux workflow)
 
 if ! command -v stow >/dev/null 2>&1; then
     echo "error: stow is not installed" >&2
@@ -14,6 +14,18 @@ fi
 install_starship() {
     echo "installing starship"
     curl -fsSL https://starship.rs/install.sh | sh -s -- --yes
+}
+
+install_mise() {
+    echo "installing mise"
+    curl -fsSL https://mise.run | sh
+    export PATH="$HOME/.local/bin:$PATH"
+}
+
+install_mise_tool() {
+    local tool="$1"
+    echo "installing $tool via mise"
+    mise use -g "$tool"
 }
 
 install_kitty() {
@@ -74,6 +86,10 @@ if ! command -v curl >/dev/null 2>&1; then
     echo "warning: curl not found; cannot auto-install kitty/starship"
 else
     command -v starship >/dev/null 2>&1 || install_starship
+    command -v mise >/dev/null 2>&1 || install_mise
+    command -v atuin >/dev/null 2>&1 || install_mise_tool atuin
+    command -v fzf >/dev/null 2>&1 || install_mise_tool fzf
+    command -v watchexec >/dev/null 2>&1 || install_mise_tool watchexec
     command -v kitty >/dev/null 2>&1 || install_kitty
     nvim_too_old && install_neovim
     command -v rg >/dev/null 2>&1 || install_ripgrep
