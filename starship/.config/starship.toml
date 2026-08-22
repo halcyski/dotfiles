@@ -1,0 +1,44 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+palette = "kitty"
+
+# >>> kitty palette
+[palettes.kitty]
+color0 = "#191919"
+color1 = "#DE6E7C"
+color2 = "#819B69"
+color3 = "#B77E64"
+color4 = "#6099C0"
+color5 = "#B279A7"
+color6 = "#66A5AD"
+color7 = "#BBBBBB"
+color8 = "#3D3839"
+color9 = "#E8838F"
+color10 = "#8BAE68"
+color11 = "#D68C67"
+color12 = "#61ABDA"
+color13 = "#CF86C1"
+color14 = "#65B8C1"
+color15 = "#8E8E8E"
+foreground = "#BBBBBB"
+background = "#191919"
+# <<< kitty palette
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$character"""
+
+[directory]
+style = "color4 bold"
+
+[git_branch]
+style = "color5"
+
+[git_status]
+style = "color1"
+
+[character]
+success_symbol = "[❯](color2)"
+error_symbol = "[❯](color1)"

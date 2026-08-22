@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# kitty-starship-sync
+
+set -euo pipefail
+
+THEME="${KITTY_THEME_FILE:-$HOME/.config/kitty/current-theme.conf}"
+STARSHIP="${STARSHIP_CONFIG:-$HOME/.config/starship.toml}"
+BEGIN="# >>> kitty palette"
+END="# <<< kitty palette"
+
+[ -f "$THEME" ] || exit 0
+[ -f "$STARSHIP" ] || exit 0
+grep -qF "$BEGIN" "$STARSHIP" || exit 0
+grep -qF "$END" "$STARSHIP" || exit 0
+
+theme_val() {
+    awk -v k="$1" '
+        $1 == k { print $2; exit }
+    ' "$THEME"
+}
+
+block="$BEGIN"$'\n'"[palettes.kitty]"
+for i in $(seq 0 15); do
+    v=$(theme_val "color$i")
+    [ -n "$v" ] && block+=$'\n'"color$i = \"$v\""
+done
+for k in foreground background; do
+    v=$(theme_val "$k")
+    [ -n "$v" ] && block+=$'\n'"$k = \"$v\""
+done
+block+=$'\n'"$END"
+
+tmp=$(mktemp)
+BLOCK="$block" awk -v b="$BEGIN" -v e="$END" '
+    $0 == b { print ENVIRON["BLOCK"]; skip = 1; next }
+    $0 == e { skip = 0; next }
+    !skip   { print }
+' "$STARSHIP" > "$tmp"
+
+cat "$tmp" > "$STARSHIP"
+rm -f "$tmp"

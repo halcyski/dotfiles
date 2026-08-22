@@ -1,0 +1,8 @@
+font_family ProggyCleanSZ Nerd Font
+font_size 16.0
+
+
+# BEGIN_KITTY_THEME
+# Afterglow
+include current-theme.conf
+# END_KITTY_THEME
