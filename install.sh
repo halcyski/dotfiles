@@ -82,6 +82,34 @@ install_fd() {
     rm -rf "$tmp"
 }
 
+install_unzip() {
+    if command -v unzip >/dev/null 2>&1; then
+        return
+    fi
+
+    if command -v apt-get >/dev/null 2>&1; then
+        echo "installing unzip (needs sudo)"
+        sudo apt-get install -y unzip || \
+            echo "warning: unzip install failed; install it before running Mason"
+    else
+        echo "warning: unzip not found; install it before running Mason"
+    fi
+}
+
+install_delta() {
+    if command -v delta >/dev/null 2>&1; then
+        return
+    fi
+
+    if command -v apt-get >/dev/null 2>&1; then
+        echo "installing git-delta (needs sudo)"
+        sudo apt-get install -y git-delta || \
+            echo "warning: git-delta install failed; install it manually"
+    else
+        echo "warning: git-delta not found; install it manually"
+    fi
+}
+
 if ! command -v curl >/dev/null 2>&1; then
     echo "warning: curl not found; cannot auto-install kitty/starship"
 else
@@ -104,6 +132,14 @@ if ! command -v tmux >/dev/null 2>&1; then
     else
         echo "warning: tmux not found and no apt-get; install it manually"
     fi
+fi
+
+install_delta
+if command -v git >/dev/null 2>&1 && command -v delta >/dev/null 2>&1; then
+    git config --global core.pager delta
+    git config --global interactive.diffFilter 'delta --color-only'
+    git config --global delta.navigate true
+    git config --global delta.side-by-side true
 fi
 
 backup_conflict() {
@@ -139,11 +175,14 @@ else
 fi
 
 if command -v nvim >/dev/null 2>&1; then
-    echo "installing nvim LSP servers and formatters via mason"
-    nvim --headless \
-        "+MasonInstall ruff clangd stylua shfmt prettierd prettier" \
-        +qa >/dev/null 2>&1 || \
-        echo "warning: mason install had errors; run :Mason in nvim to check"
+    install_unzip
+    if command -v unzip >/dev/null 2>&1; then
+        echo "installing nvim LSP servers and formatters via mason"
+        nvim --headless \
+            "+MasonInstall ruff clangd stylua shfmt prettierd prettier" \
+            +qa >/dev/null 2>&1 || \
+            echo "warning: mason install had errors; run :Mason in nvim to check"
+    fi
 fi
 
 echo "yay. open a new shell or run: source ~/.bashrc"
