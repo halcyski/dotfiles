@@ -83,7 +83,7 @@ alias gs='git status'
 alias gl='git log'
 alias ..='cd ..'
 alias cl='cd $1; ls'
-
+alias gd='git diff $1'
 # Open a file reference such as src/parser.cpp:183 in Neovim
 v() {
     if [ "$#" -eq 1 ] && [[ $1 =~ ^(.+):([0-9]+)(-[0-9]+)?$ ]]; then
