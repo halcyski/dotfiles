@@ -1,5 +1,11 @@
 # dotfiles cheatsheet
 
+## nvim
+
+ - ':bn': next buffer nvim
+ - ':bp': prev buffer nvim
+ - ':bd': delete buffer nvim
+
 ## tmux
 
 prefix: `ctrl-b`
@@ -52,3 +58,5 @@ grep -ne '^bind|^alias|^[[:alpha:]_][[:alnum:]_]*\(\)' \
 - `tmux list-keys`: show active tmux keybindings
 - `alias`: show shell aliases in the current shell
 - `declare -f`: show shell functions loaded in the current shell
+
+
