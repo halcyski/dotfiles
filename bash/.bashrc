@@ -121,6 +121,7 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/node-v22/bin:$PATH"
 eval "$(direnv hook bash)"
@@ -132,14 +133,6 @@ if command -v atuin >/dev/null 2>&1; then
     eval "$(atuin init bash)"
 fi
 
-# Skips when already in tmux, non-interactive, or NO_TMUX is set.
-if command -v tmux >/dev/null 2>&1 \
-    && command -v tmux-project >/dev/null 2>&1 \
-    && [ -z "${TMUX:-}" ] \
-    && [ -z "${NO_TMUX:-}" ] \
-    && [[ $- == *i* ]]; then
-    exec tmux-project
-fi
 
 # sync starship palette from the active kitty theme, then start starship
 if command -v kitty-starship-sync >/dev/null 2>&1; then
