@@ -6,16 +6,26 @@ root=$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)
 session=$(basename "$root" | tr -c 'A-Za-z0-9_-' '_' | sed 's/_*$//')
 [ -n "$session" ] || session=main
 
+start_pi() {
+    if tmux list-panes -t "$session:CODE" -F '#{pane_current_command}' | grep -qx pi; then
+        return
+    fi
+
+    tmux split-window -h -l 30% -t "$session:CODE" -c "$root" \
+        "bash -lc 'until tmux list-clients -t \"$session\" 2>/dev/null | grep -q .; do sleep 0.05; done; exec pi'"
+}
+
 if tmux has-session -t "=$session" 2>/dev/null; then
+    start_pi
     exec tmux attach-session -t "=$session"
 fi
 
 tmux new-session -d -s "$session" -c "$root" -n CODE nvim
-tmux split-window -h -p 30 -t "$session:CODE" -c "$root" pi
+start_pi
 tmux select-pane -t "$session:CODE.1"
 
 tmux new-window -t "$session:" -n VERIFY -c "$root"
-tmux split-window -v -p 50 -t "$session:VERIFY" -c "$root" \
+tmux split-window -v -l 50% -t "$session:VERIFY" -c "$root" \
     "bash -lc 'tmux-task watch-test; exec bash'"
 tmux send-keys -t "$session:VERIFY.1" \
     "tmux-task watch-build; exec bash" Enter
